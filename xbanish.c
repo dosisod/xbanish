@@ -49,7 +49,7 @@ static int device_change_type = -1;
 static long last_device_change = -1;
 
 static Display *dpy;
-static int hiding = 0, legacy = 0, always_hide = 0;
+static int hiding = 0, legacy = 0, always_hide = 0, init_hide = 0;
 static unsigned timeout = 0;
 static unsigned char ignored;
 static XSyncCounter idler_counter = 0;
@@ -92,8 +92,11 @@ main(int argc, char *argv[])
 		{"all", -1},
 	};
 
-	while ((ch = getopt(argc, argv, "adi:m:t:")) != -1)
+	while ((ch = getopt(argc, argv, "adxi:m:t:")) != -1)
 		switch (ch) {
+		case 'x':
+			init_hide = 1;
+			break;
 		case 'a':
 			always_hide = 1;
 			break;
@@ -151,7 +154,7 @@ main(int argc, char *argv[])
 
 	snoop_root();
 
-	if (always_hide)
+	if (always_hide || init_hide)
 		hide_cursor();
 
 	/* required setup for the xsync alarms used by timeout */
@@ -573,7 +576,7 @@ set_alarm(XSyncAlarm *alarm, XSyncTestType test)
 void
 usage(char *progname)
 {
-	fprintf(stderr, "usage: %s [-a] [-d] [-i mod] [-m [w]nw|ne|sw|se] "
+	fprintf(stderr, "usage: %s [-x] [-a] [-d] [-i mod] [-m [w]nw|ne|sw|se] "
 	    "[-t seconds]\n", progname);
 	exit(1);
 }
